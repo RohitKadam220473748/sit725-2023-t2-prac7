@@ -1,29 +1,7 @@
-const cardList = [
-  {
-      title: 'cat 1',
-      path: 'images/cat1.jpg',
-      subTitle: 'About Cat 1',
-      description: 'Description of Cat 1 <p> Hi there I am looking for owner please adopt me I am a nice behaving cat, I am very obedient. </p>'
-  },
-  {
-      title: 'cat 2',
-      path: 'images/cat2.jpg',
-      subTitle: 'About Cat 2',
-      description: 'Description of Cat 2 <p> Hi there I am looking for owner please adopt me I am a nice behaving cat and also I will protect you. </p>'
-  },
-  {
-      title: 'cat 3',
-      path: 'images/cat3.jpg',
-      subTitle: 'About Cat 3',
-      description: 'Description of Cat 3 <p> Hi there I am looking for owner please adopt me I am a nice behaving cat, I am lot better than other cats. </p>'
-  }
-];
-
-
 const addCards = (items) => {
-  const cardSection = document.getElementById('card-section');
-  items.forEach(item => {
-     let contentcard = `
+    const cardSection = document.getElementById('card-section');
+    items.forEach(item => {
+        let contentcard = `
       <div class="col s4 center-align">
           <div class="card medium">
               <div class="card-image waves-effect waves-block waves-light">
@@ -41,47 +19,68 @@ const addCards = (items) => {
           </div>
       `;
 
-      $(cardSection).append(contentcard)
-  });
+        $(cardSection).append(contentcard)
+    });
 };
 
 const formSubmitted = () => {
-  let formData = {};
-  formData.firstName = $('#first_name').val();
-  formData.lastName = $('#last_name').val();
-  formData.password = $('#password').val();
-  formData.email = $('#email').val();
+    let formData = {};
+    formData.title = $('#title').val();
+    formData.path = $('#path').val();
+    formData.subTitle = $('#subTitle').val();
+    formData.description = $('#description').val();
 
-  console.log(formData);
-  
+    console.log(formData);
+    postCat(formData);
 };
 
 function validateForm() {
-  const fName = $('#first_name').val();
-  const ltName = $('#last_name').val();
-  const pass = $('#password').val();
-  const mail = $('#email').val();
+    const title = $('#title').val();
+    const path = $('#path').val();
+    const subTitle = $('#subTitle').val();
+    const description = $('#description').val();
 
-  if (fName === '' || ltName === '' || pass === '' || mail === '') {
-      alert('Please enter all required fields.');
-  } else {
-      formSubmitted();
-      $('.modal').modal('close');
-      alert('Thanks for submitting the data'); 
-  }
+    if (title === '' || path === '' || subTitle === '' || description === '') {
+        alert('Please enter all required fields.');
+    } else {
+        formSubmitted();
+        $('.modal').modal('close');
+        alert('Thanks for submitting the data');
+    }
 }
 
 
+function postCat(cat) {
+    $.ajax({
+        url: '/api/cat',
+        type: 'POST',
+        data: cat,
+        success: (result) => {
+            if (result.statusCode === 201) {
+                alert('cat posted');
+            }
+        }
+    });
+}
+
+function getAllCats() {
+    $.get('/api/cats', (result) => {
+        if (result.statusCode === 200) {
+            addCards(result.data);
+        }
+    });
+}
+
 const formCanceled = () => {
-  $('.modal').modal('close');
+    $('.modal').modal('close');
 };
 
 $(document).ready(function () {
-  $('.materialboxed').materialbox();
-  
-  $('#formcancel').click(() => {
-    formCanceled();
-  });
-  addCards(cardList);
-  $('.modal').modal();
+    $('.materialboxed').materialbox();
+
+    $('#formcancel').click(() => {
+        formCanceled();
+    });
+    $('.modal').modal();
+    getAllCats();
 });
